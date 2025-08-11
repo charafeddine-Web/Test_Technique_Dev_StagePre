@@ -54,7 +54,7 @@ project/
 
 ```bash
 # Cloner le projet
-git clone <repository-url>
+git clone https://github.com/charafeddine-Web/Test_Technique_Dev_StagePre.git
 cd laravel-api
 
 # Installer les dépendances
