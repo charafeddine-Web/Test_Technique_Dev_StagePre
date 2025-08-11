@@ -9,8 +9,7 @@ Un système complet de gestion de tâches avec authentification JWT et notificat
 - ✅ **Gestion des tâches** - CRUD complet avec validation
 - ✅ **Notifications en temps réel** - Via Laravel Events et Pusher
 - ✅ **Architecture Repository** - Séparation des responsabilités
-- ✅ **Tests complets** - Tests unitaires et d'intégration
-- ✅ **Documentation API** - Documentation complète des endpoints
+
 
 ### Frontend (Vue.js)
 - ✅ **Interface moderne** - Design responsive et intuitif
