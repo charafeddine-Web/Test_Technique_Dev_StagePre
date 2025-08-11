@@ -31,8 +31,6 @@ project/
 │   │   ├── Notifications/     # Notifications Laravel
 │   │   └── Models/            # Modèles Eloquent
 │   ├── routes/api.php         # Routes API
-│   ├── tests/                 # Tests
-│   └── API_DOCUMENTATION.md   # Documentation API
 │
 └── task-management-frontend/   # Frontend Vue.js
     ├── src/
@@ -40,7 +38,6 @@ project/
     │   ├── views/             # Pages Vue
     │   ├── services/          # Services (Echo, etc.)
     │   └── router/            # Configuration Vue Router
-    ├── README_VUE.md          # Documentation Frontend
     └── package.json           # Dépendances Vue.js
 ```
 
@@ -50,7 +47,7 @@ project/
 - PHP 8.1+
 - Composer
 - Node.js 16+
-- MySQL/PostgreSQL
+- MySQL
 - Compte Pusher (pour les notifications temps réel)
 
 ### 1. Backend Laravel
@@ -154,25 +151,9 @@ VITE_PUSHER_CLUSTER=your_cluster
 - Consultez l'historique dans la page "Notifications"
 - Marquez les notifications comme lues ou supprimez-les
 
-## 🧪 Tests
 
-### Tests Backend
-```bash
-cd laravel-api
-php artisan test
-```
-
-### Tests Frontend
-```bash
-cd task-management-frontend
-npm run test
-```
 
 ## 📚 Documentation
-
-- **API Documentation** : `laravel-api/API_DOCUMENTATION.md`
-- **Frontend Documentation** : `task-management-frontend/README_VUE.md`
-- **Notifications Documentation** : `laravel-api/NOTIFICATIONS_README.md`
 
 ## 🔌 API Endpoints
 
@@ -194,61 +175,7 @@ npm run test
 - `PATCH /api/notifications/mark-all-read` - Marquer tout comme lu
 - `DELETE /api/notifications/{id}` - Supprimer une notification
 
-## 🚀 Déploiement
 
-### Backend (Production)
-```bash
-# Build de production
-composer install --optimize-autoloader --no-dev
-
-# Configuration
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Migrations
-php artisan migrate --force
-```
-
-### Frontend (Production)
-```bash
-# Build de production
-npm run build
-
-# Déployer le dossier dist/
-```
-
-## 🤝 Contribution
-
-1. Fork le projet
-2. Créez une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une Pull Request
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
-
-## 🆘 Support
-
-Pour toute question ou problème :
-1. Consultez la documentation
-2. Vérifiez les issues existantes
-3. Créez une nouvelle issue avec les détails du problème
-
-## 🔮 Roadmap
-
-- [ ] Notifications par email
-- [ ] Export des tâches (PDF/Excel)
-- [ ] Mode hors ligne
-- [ ] Intégration calendrier
-- [ ] Partage de tâches entre utilisateurs
-- [ ] API GraphQL
-- [ ] Application mobile (React Native)
-- [ ] Intégration Slack/Discord
-- [ ] Système de rappels
-- [ ] Analytics et rapports
 
 ---
 
