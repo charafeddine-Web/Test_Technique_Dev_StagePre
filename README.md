@@ -1,66 +1,256 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Un système complet de gestion de tâches avec authentification JWT et notifications en temps réel, composé d'une API Laravel et d'un frontend Vue.js.
 
-## About Laravel
+## 🚀 Fonctionnalités
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Backend (Laravel)
+- ✅ **Authentification JWT** - Inscription, connexion, gestion des tokens
+- ✅ **Gestion des tâches** - CRUD complet avec validation
+- ✅ **Notifications en temps réel** - Via Laravel Events et Pusher
+- ✅ **Architecture Repository** - Séparation des responsabilités
+- ✅ **Tests complets** - Tests unitaires et d'intégration
+- ✅ **Documentation API** - Documentation complète des endpoints
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Frontend (Vue.js)
+- ✅ **Interface moderne** - Design responsive et intuitif
+- ✅ **Gestion d'état Pinia** - État centralisé et réactif
+- ✅ **Notifications temps réel** - Intégration Laravel Echo + Pusher
+- ✅ **Navigation Vue Router** - Routage côté client avec protection
+- ✅ **Appels API Axios** - Gestion automatique des tokens JWT
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 📁 Structure du projet
 
-## Learning Laravel
+```
+project/
+├── laravel-api/                 # Backend Laravel
+│   ├── app/
+│   │   ├── Http/Controllers/    # Contrôleurs API
+│   │   ├── Services/           # Couche métier
+│   │   ├── Repositories/       # Pattern Repository
+│   │   ├── Events/            # Événements temps réel
+│   │   ├── Notifications/     # Notifications Laravel
+│   │   └── Models/            # Modèles Eloquent
+│   ├── routes/api.php         # Routes API
+│   ├── tests/                 # Tests
+│   └── API_DOCUMENTATION.md   # Documentation API
+│
+└── task-management-frontend/   # Frontend Vue.js
+    ├── src/
+    │   ├── stores/            # Stores Pinia
+    │   ├── views/             # Pages Vue
+    │   ├── services/          # Services (Echo, etc.)
+    │   └── router/            # Configuration Vue Router
+    ├── README_VUE.md          # Documentation Frontend
+    └── package.json           # Dépendances Vue.js
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Prérequis
+- PHP 8.1+
+- Composer
+- Node.js 16+
+- MySQL/PostgreSQL
+- Compte Pusher (pour les notifications temps réel)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Backend Laravel
 
-## Laravel Sponsors
+```bash
+# Cloner le projet
+git clone <repository-url>
+cd laravel-api
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Installer les dépendances
+composer install
 
-### Premium Partners
+# Configuration
+cp .env.example .env
+php artisan key:generate
+php artisan jwt:secret
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# Configuration base de données
+# Modifier .env avec vos paramètres DB
 
-## Contributing
+# Migrations et seeders
+php artisan migrate
+php artisan db:seed
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Configuration Pusher
+# Ajouter vos clés Pusher dans .env
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=your_app_id
+PUSHER_APP_KEY=your_app_key
+PUSHER_APP_SECRET=your_app_secret
+PUSHER_APP_CLUSTER=your_cluster
 
-## Code of Conduct
+# Démarrer le serveur
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 2. Frontend Vue.js
 
-## Security Vulnerabilities
+```bash
+cd task-management-frontend
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Installer les dépendances
+npm install
 
-## License
+# Configuration
+cp env.example .env
+# Modifier .env avec vos clés Pusher
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Démarrer le serveur de développement
+npm run dev
+```
+
+## 🔧 Configuration
+
+### Variables d'environnement Laravel (.env)
+
+```env
+# Base de données
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_management
+DB_USERNAME=root
+DB_PASSWORD=
+
+# JWT
+JWT_SECRET=your_jwt_secret
+JWT_TTL=60
+
+# Pusher
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=your_app_id
+PUSHER_APP_KEY=your_app_key
+PUSHER_APP_SECRET=your_app_secret
+PUSHER_APP_CLUSTER=your_cluster
+```
+
+### Variables d'environnement Vue.js (.env)
+
+```env
+VITE_API_URL=http://localhost:8000/api
+VITE_PUSHER_KEY=your_pusher_key
+VITE_PUSHER_CLUSTER=your_cluster
+```
+
+## 📖 Utilisation
+
+### 1. Inscription/Connexion
+- Accédez à `http://localhost:5173`
+- Créez un compte ou connectez-vous
+- Vous serez automatiquement redirigé vers le tableau de bord
+
+### 2. Gestion des tâches
+- **Créer une tâche** : Cliquez sur "Nouvelle tâche" depuis le tableau de bord
+- **Voir toutes les tâches** : Accédez à la page "Tâches"
+- **Modifier/Supprimer** : Utilisez les boutons d'action sur chaque tâche
+- **Filtrer/Rechercher** : Utilisez les filtres sur la page des tâches
+
+### 3. Notifications temps réel
+- Les notifications apparaissent automatiquement lors de la création de tâches
+- Consultez l'historique dans la page "Notifications"
+- Marquez les notifications comme lues ou supprimez-les
+
+## 🧪 Tests
+
+### Tests Backend
+```bash
+cd laravel-api
+php artisan test
+```
+
+### Tests Frontend
+```bash
+cd task-management-frontend
+npm run test
+```
+
+## 📚 Documentation
+
+- **API Documentation** : `laravel-api/API_DOCUMENTATION.md`
+- **Frontend Documentation** : `task-management-frontend/README_VUE.md`
+- **Notifications Documentation** : `laravel-api/NOTIFICATIONS_README.md`
+
+## 🔌 API Endpoints
+
+### Authentification
+- `POST /api/auth/register` - Inscription
+- `POST /api/auth/login` - Connexion
+- `GET /api/auth/me` - Profil utilisateur
+
+### Tâches
+- `GET /api/tasks` - Liste des tâches
+- `POST /api/tasks` - Créer une tâche
+- `GET /api/tasks/{id}` - Détail d'une tâche
+- `PUT /api/tasks/{id}` - Modifier une tâche
+- `DELETE /api/tasks/{id}` - Supprimer une tâche
+
+### Notifications
+- `GET /api/notifications` - Liste des notifications
+- `PATCH /api/notifications/{id}/read` - Marquer comme lue
+- `PATCH /api/notifications/mark-all-read` - Marquer tout comme lu
+- `DELETE /api/notifications/{id}` - Supprimer une notification
+
+## 🚀 Déploiement
+
+### Backend (Production)
+```bash
+# Build de production
+composer install --optimize-autoloader --no-dev
+
+# Configuration
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Migrations
+php artisan migrate --force
+```
+
+### Frontend (Production)
+```bash
+# Build de production
+npm run build
+
+# Déployer le dossier dist/
+```
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créez une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrez une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## 🆘 Support
+
+Pour toute question ou problème :
+1. Consultez la documentation
+2. Vérifiez les issues existantes
+3. Créez une nouvelle issue avec les détails du problème
+
+## 🔮 Roadmap
+
+- [ ] Notifications par email
+- [ ] Export des tâches (PDF/Excel)
+- [ ] Mode hors ligne
+- [ ] Intégration calendrier
+- [ ] Partage de tâches entre utilisateurs
+- [ ] API GraphQL
+- [ ] Application mobile (React Native)
+- [ ] Intégration Slack/Discord
+- [ ] Système de rappels
+- [ ] Analytics et rapports
+
+---
+
+**Développé avec charaf eddine tbibzat  en utilisant Laravel et Vue.js**

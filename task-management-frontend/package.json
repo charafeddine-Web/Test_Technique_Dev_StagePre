@@ -1,0 +1,37 @@
+{
+  "name": "task-management-frontend",
+  "version": "1.0.0",
+  "description": "Frontend Vue.js pour le système de gestion de tâches avec notifications en temps réel",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "laravel-echo": "^1.15.3",
+    "pinia": "^2.1.7",
+    "pusher-js": "^8.4.0",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "eslint": "^8.49.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "vite": "^4.4.11"
+  },
+  "keywords": [
+    "vue",
+    "pinia",
+    "laravel",
+    "pusher",
+    "real-time",
+    "notifications",
+    "task-management"
+  ],
+  "author": "Task Management Team",
+  "license": "MIT"
+}

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications en Temps Réel</title>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .notification {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .notification.unread {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        .notification h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .notification p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .notification .time {
+            font-size: 12px;
+            color: #999;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .controls input, .controls button {
+            margin: 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .controls button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .controls button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .task-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .task-form input, .task-form textarea, .task-form select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .task-form button {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .task-form button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Notifications en Temps Réel</h1>
+        
+        <div class="status" id="connectionStatus">
+            <strong>Statut:</strong> <span id="statusText">Déconnecté</span>
+        </div>
+
+        <div class="controls">
+            <h3>Configuration</h3>
+            <input type="text" id="tokenInput" placeholder="Token JWT" style="width: 300px;">
+            <button onclick="connect()">Se connecter</button>
+            <button onclick="disconnect()">Se déconnecter</button>
+            <button onclick="loadNotifications()">Charger les notifications</button>
+            <button onclick="markAllAsRead()">Marquer tout comme lu</button>
+        </div>
+
+        <div class="task-form">
+            <h3>Créer une nouvelle tâche (test)</h3>
+            <input type="text" id="taskTitle" placeholder="Titre de la tâche">
+            <textarea id="taskDescription" placeholder="Description de la tâche" rows="3"></textarea>
+            <select id="taskStatus">
+                <option value="pending">En attente</option>
+                <option value="in_progress">En cours</option>
+                <option value="done">Terminé</option>
+            </select>
+            <button onclick="createTask()">Créer la tâche</button>
+        </div>
+
+        <div id="notificationsContainer">
+            <h3>Notifications</h3>
+            <div id="notificationsList">
+                <p>Aucune notification pour le moment.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pusher = null;
+        let channel = null;
+        let currentToken = null;
+
+        function connect() {
+            const token = document.getElementById('tokenInput').value.trim();
+            if (!token) {
+                alert('Veuillez entrer un token JWT');
+                return;
+            }
+
+            currentToken = token;
+            
+            // Configuration Pusher (à adapter selon votre configuration)
+            pusher = new Pusher('your-pusher-key', {
+                cluster: 'your-cluster',
+                authEndpoint: '/api/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                }
+            });
+
+            // Écouter les événements de connexion
+            pusher.connection.bind('connected', () => {
+                updateStatus('Connecté', true);
+                console.log('Connecté à Pusher');
+            });
+
+            pusher.connection.bind('disconnected', () => {
+                updateStatus('Déconnecté', false);
+                console.log('Déconnecté de Pusher');
+            });
+
+            // Obtenir l'ID utilisateur depuis le token (décodage simple)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const userId = payload.sub;
+
+            // S'abonner au canal privé de l'utilisateur
+            channel = pusher.subscribe('private-user.' + userId);
+
+            // Écouter les événements de notification
+            channel.bind('task.created', function(data) {
+                console.log('Nouvelle tâche créée:', data);
+                addNotification(data);
+            });
+
+            // Écouter les notifications Laravel
+            channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
+                console.log('Nouvelle notification:', data);
+                addNotification(data);
+            });
+
+            loadNotifications();
+        }
+
+        function disconnect() {
+            if (pusher) {
+                pusher.disconnect();
+                pusher = null;
+                channel = null;
+                updateStatus('Déconnecté', false);
+            }
+        }
+
+        function updateStatus(text, connected) {
+            const statusElement = document.getElementById('statusText');
+            const statusContainer = document.getElementById('connectionStatus');
+            
+            statusElement.textContent = text;
+            statusContainer.className = 'status ' + (connected ? 'connected' : 'disconnected');
+        }
+
+        function addNotification(data) {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            // Supprimer le message "Aucune notification"
+            if (notificationsList.querySelector('p')) {
+                notificationsList.innerHTML = '';
+            }
+
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = 'notification unread';
+            
+            const time = new Date().toLocaleTimeString();
+            
+            notificationDiv.innerHTML = `
+                <h4>${data.message || 'Nouvelle notification'}</h4>
+                ${data.task ? `
+                    <p><strong>Tâche:</strong> ${data.task.title}</p>
+                    <p><strong>Description:</strong> ${data.task.description}</p>
+                    <p><strong>Statut:</strong> ${data.task.status}</p>
+                ` : ''}
+                <p class="time">${time}</p>
+            `;
+
+            notificationsList.insertBefore(notificationDiv, notificationsList.firstChild);
+        }
+
+        async function loadNotifications() {
+            if (!currentToken) {
+                alert('Veuillez d\'abord vous connecter');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/notifications', {
+                    headers: {
+                        'Authorization': 'Bearer ' + currentToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayNotifications(data.data.notifications);
+                } else {
+                    console.error('Erreur lors du chargement des notifications:', data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = '<p>Aucune notification pour le moment.</p>';
+                return;
+            }
+
+            notificationsList.innerHTML = '';
+            
+            notifications.forEach(notification => {
+                const notificationDiv = document.createElement('div');
+                notificationDiv.className = 'notification ' + (notification.read_at ? '' : 'unread');
+                
+                const time = new Date(notification.created_at).toLocaleString();
+                
+                notificationDiv.innerHTML = `
+                    <h4>${notification.data.message}</h4>
+                    ${notification.data.task_title ? `
+                        <p><strong>Tâche:</strong> ${notification.data.task_title}</p>
+                        <p><strong>Description:</strong> ${notification.data.task_description}</p>
+                        <p><strong>Statut:</strong> ${notification.data.task_status}</p>
+                    ` : ''}
+                    <p class="time">${time}</p>
+                `;
+
+                notificationsList.appendChild(notificationDiv);
+            });
+        }
+
+        async function markAllAsRead() {
+            if (!currentToken) {
+                alert('Veuillez d\'abord vous connecter');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/notifications/mark-all-read', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': 'Bearer ' + currentToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Toutes les notifications ont été marquées comme lues');
+                    loadNotifications();
+                } else {
+                    console.error('Erreur:', data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        async function createTask() {
+            if (!currentToken) {
+                alert('Veuillez d\'abord vous connecter');
+                return;
+            }
+
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const status = document.getElementById('taskStatus').value;
+
+            if (!title) {
+                alert('Veuillez entrer un titre pour la tâche');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + currentToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        description: description,
+                        status: status
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Tâche créée avec succès ! Une notification devrait apparaître bientôt.');
+                    // Vider le formulaire
+                    document.getElementById('taskTitle').value = '';
+                    document.getElementById('taskDescription').value = '';
+                    document.getElementById('taskStatus').value = 'pending';
+                } else {
+                    console.error('Erreur lors de la création de la tâche:', data.message);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        // Initialisation
+        updateStatus('Déconnecté', false);
+    </script>
+</body>
+</html>
